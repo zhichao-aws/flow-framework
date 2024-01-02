@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 import static org.opensearch.flowframework.common.CommonValue.REGISTER_MODEL_STATUS;
 import static org.opensearch.flowframework.common.FlowFrameworkSettings.MAX_GET_TASK_REQUEST_RETRY;
 import static org.opensearch.flowframework.common.WorkflowResources.DEPLOY_MODEL;
+import static org.opensearch.flowframework.common.WorkflowResources.REGISTER_LOCAL_MODEL;
 import static org.opensearch.flowframework.common.WorkflowResources.getResourceByWorkflowStep;
 
 /**
@@ -93,7 +94,7 @@ public abstract class AbstractRetryableWorkflowStep implements WorkflowStep {
                     logger.info(workflowStep + " successful for {} and modelId {}", workflowId, response.getModelId());
                     String resourceName = getResourceByWorkflowStep(getName());
                     String id;
-                    if (getName().equals(DEPLOY_MODEL.getWorkflowStep())) {
+                    if (getName().equals(DEPLOY_MODEL.getWorkflowStep())||getName().equals(REGISTER_LOCAL_MODEL.getWorkflowStep())) {
                         id = response.getModelId();
                     } else {
                         id = response.getTaskId();

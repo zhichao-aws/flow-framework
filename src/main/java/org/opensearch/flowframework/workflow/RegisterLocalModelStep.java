@@ -18,6 +18,7 @@ import org.opensearch.flowframework.exception.FlowFrameworkException;
 import org.opensearch.flowframework.indices.FlowFrameworkIndicesHandler;
 import org.opensearch.flowframework.util.ParseUtils;
 import org.opensearch.ml.client.MachineLearningNodeClient;
+import org.opensearch.ml.common.FunctionName;
 import org.opensearch.ml.common.model.MLModelConfig;
 import org.opensearch.ml.common.model.MLModelFormat;
 import org.opensearch.ml.common.model.TextEmbeddingModelConfig;
@@ -35,6 +36,7 @@ import static org.opensearch.flowframework.common.CommonValue.ALL_CONFIG;
 import static org.opensearch.flowframework.common.CommonValue.DESCRIPTION_FIELD;
 import static org.opensearch.flowframework.common.CommonValue.EMBEDDING_DIMENSION;
 import static org.opensearch.flowframework.common.CommonValue.FRAMEWORK_TYPE;
+import static org.opensearch.flowframework.common.CommonValue.FUNCTION_NAME;
 import static org.opensearch.flowframework.common.CommonValue.MODEL_CONTENT_HASH_VALUE;
 import static org.opensearch.flowframework.common.CommonValue.MODEL_FORMAT;
 import static org.opensearch.flowframework.common.CommonValue.MODEL_TYPE;
@@ -120,7 +122,7 @@ public class RegisterLocalModelStep extends AbstractRetryableWorkflowStep {
             MODEL_CONTENT_HASH_VALUE,
             URL
         );
-        Set<String> optionalKeys = Set.of(DESCRIPTION_FIELD, MODEL_GROUP_ID, ALL_CONFIG);
+        Set<String> optionalKeys = Set.of(DESCRIPTION_FIELD, MODEL_GROUP_ID, ALL_CONFIG, FUNCTION_NAME);
 
         try {
             Map<String, Object> inputs = ParseUtils.getInputsFromPreviousSteps(
@@ -142,6 +144,7 @@ public class RegisterLocalModelStep extends AbstractRetryableWorkflowStep {
             FrameworkType frameworkType = FrameworkType.from((String) inputs.get(FRAMEWORK_TYPE));
             String allConfig = (String) inputs.get(ALL_CONFIG);
             String url = (String) inputs.get(URL);
+            FunctionName functionName = FunctionName.from((String) inputs.get(FUNCTION_NAME));
 
             // Create Model configuration
             TextEmbeddingModelConfigBuilder modelConfigBuilder = TextEmbeddingModelConfig.builder()
@@ -161,7 +164,8 @@ public class RegisterLocalModelStep extends AbstractRetryableWorkflowStep {
                 .modelGroupId(modelGroupId)
                 .hashValue(modelContentHashValue)
                 .modelConfig(modelConfig)
-                .url(url);
+                .url(url)
+                .functionName(functionName);
             if (description != null) {
                 mlInputBuilder.description(description);
             }
